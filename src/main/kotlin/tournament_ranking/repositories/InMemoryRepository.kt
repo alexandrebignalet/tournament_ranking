@@ -1,9 +1,8 @@
 package tournament_ranking.repositories
 
-import com.google.common.collect.ImmutableList
 import tournament_ranking.domain.Entity
 
-class InMemoryRepository<EType: Entity> {
+open class InMemoryRepository<EType: Entity> {
 
     private val byId = HashMap<String, EType>()
 
@@ -12,7 +11,7 @@ class InMemoryRepository<EType: Entity> {
     }
 
     fun add(entity: EType) {
-        byId[entity.id] = entity
+        byId[entity.id()] = entity
     }
 
 }

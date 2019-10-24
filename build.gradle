@@ -19,6 +19,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "io.dropwizard:dropwizard-core:$dropwizard_version"
     compile "io.dropwizard:dropwizard-testing:$dropwizard_version"
+
     testCompile "org.mockito:mockito-core:$mockito_version"
 }
 

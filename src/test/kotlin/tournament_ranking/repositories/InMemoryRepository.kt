@@ -18,5 +18,10 @@ class InMemoryRepositoryTest {
         assertThat(repository.get(entityId)).isEqualTo(entity)
     }
 
-    class AnEntity(id: String): Entity(id)
+    class AnEntity(private val id: String): Entity {
+
+        override fun id(): String {
+            return id
+        }
+    }
 }
