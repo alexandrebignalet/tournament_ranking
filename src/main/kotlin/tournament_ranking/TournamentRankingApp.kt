@@ -5,6 +5,7 @@ import io.dropwizard.setup.Environment
 import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.CompetitorsResource
 import tournament_ranking.resources.DefaultResource
+import tournament_ranking.resources.exception.RestExceptionMapper
 
 class TournamentRankingApp : Application<TournamentRankingConfig>() {
 
@@ -14,7 +15,12 @@ class TournamentRankingApp : Application<TournamentRankingConfig>() {
         val jersey = environment.jersey()
 
         val competitorRepository = CompetitorRepository()
-        val resources = listOf(DefaultResource(), CompetitorsResource(competitorRepository))
+        val resources = listOf(
+            DefaultResource(),
+            CompetitorsResource(competitorRepository),
+
+            RestExceptionMapper()
+        )
 
         resources.forEach { jersey.register(it) }
     }

@@ -2,7 +2,7 @@ package tournament_ranking.resources
 
 import tournament_ranking.domain.Competitor
 import tournament_ranking.repositories.CompetitorRepository
-import tournament_ranking.resources.dto.CreateCompetitor
+import tournament_ranking.resources.dto.AddCompetitor
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -14,7 +14,7 @@ class CompetitorsResource(private val repository: CompetitorRepository) {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    fun addCompetitor(command: CreateCompetitor): Response {
+    fun addCompetitor(command: AddCompetitor): Response {
 
         val competitor =  Competitor(command.pseudo)
 
