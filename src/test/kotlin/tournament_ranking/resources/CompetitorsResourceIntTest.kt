@@ -4,15 +4,14 @@ import io.dropwizard.testing.junit.ResourceTestRule
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
-import tournament_ranking.domain.NameRequiredError
 import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.dto.AddCompetitor
-import tournament_ranking.resources.exception.ApiError
-import tournament_ranking.resources.exception.RestExceptionMapper
 import javax.ws.rs.client.Entity
 import javax.ws.rs.core.Response
 
 class CompetitorsResourceTest {
+    private val apiErrorMessage = "{\"errors\":[\"pseudo est obligatoire\"]}"
+    private val apiErrorStatus = 422
 
     @Test
     fun shouldAddACompetitorWithHisPseudo() {
@@ -30,10 +29,9 @@ class CompetitorsResourceTest {
         val pseudo = null
         val response = doRequest(pseudo)
 
-        assertThat(response.status).isEqualTo(400)
+        assertThat(response.status).isEqualTo(apiErrorStatus)
 
-        val apiError = ApiError(NameRequiredError().message, 400)
-        assertThat(response.readEntity(ApiError::class.java)).isEqualTo(apiError)
+        assertThat(response.readEntity(String::class.java)).isEqualTo(apiErrorMessage)
     }
 
     @Test
@@ -41,10 +39,9 @@ class CompetitorsResourceTest {
         val pseudo = ""
         val response = doRequest(pseudo)
 
-        assertThat(response.status).isEqualTo(400)
+        assertThat(response.status).isEqualTo(apiErrorStatus)
 
-        val apiError = ApiError(NameRequiredError().message, 400)
-        assertThat(response.readEntity(ApiError::class.java)).isEqualTo(apiError)
+        assertThat(response.readEntity(String::class.java)).isEqualTo(apiErrorMessage)
     }
 
     private fun doRequest(pseudo: String?): Response {
@@ -59,7 +56,6 @@ class CompetitorsResourceTest {
         @JvmField
         val resources = ResourceTestRule.builder()
             .addResource(CompetitorsResource(repository))
-            .addProvider(RestExceptionMapper())
             .build()
     }
 }
