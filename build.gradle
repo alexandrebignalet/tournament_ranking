@@ -20,8 +20,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "io.dropwizard:dropwizard-core:$dropwizard_version"
     compile "io.dropwizard:dropwizard-testing:$dropwizard_version"
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version"
 
+    testCompile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version"
     testCompile "org.mockito:mockito-core:$mockito_version"
 }
 

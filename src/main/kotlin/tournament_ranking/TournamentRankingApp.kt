@@ -1,7 +1,5 @@
 package tournament_ranking
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.dropwizard.Application
 import io.dropwizard.setup.Environment
 import tournament_ranking.repositories.CompetitorRepository
