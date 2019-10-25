@@ -5,12 +5,19 @@ import org.junit.Test
 import javax.validation.Validation
 
 class AddCompetitorTest {
-    @Test
-    fun shouldBeValidIfPseudoIsEmpty() {
-        val validatorFactory = Validation.buildDefaultValidatorFactory()
-        val validator = validatorFactory.validator
+    val validatorFactory = Validation.buildDefaultValidatorFactory()
+    val validator = validatorFactory.validator
 
+    @Test
+    fun shouldBeInvalidIfPseudoIsEmpty() {
         val command = AddCompetitor("")
+
+        assertThat(validator.validate(command)).hasSize(1)
+    }
+
+    @Test
+    fun shouldBeInvalidIfPseudoIsNull() {
+        val command = AddCompetitor(null)
 
         assertThat(validator.validate(command)).hasSize(1)
     }

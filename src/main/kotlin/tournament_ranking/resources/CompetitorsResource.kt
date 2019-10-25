@@ -3,6 +3,7 @@ package tournament_ranking.resources
 import tournament_ranking.domain.Competitor
 import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.dto.AddCompetitor
+import tournament_ranking.resources.exception.CompetitorPseudoAlreadyUsed
 import javax.validation.Valid
 import javax.ws.rs.Consumes
 import javax.ws.rs.POST
@@ -19,7 +20,11 @@ class CompetitorsResource(private val repository: CompetitorRepository) {
     @Produces(MediaType.APPLICATION_JSON)
     fun addCompetitor(@Valid command: AddCompetitor): Response {
 
-        val competitor = Competitor(command.pseudo!!)
+        val pseudo = command.pseudo!!
+
+        if (repository.get(pseudo) != null) throw CompetitorPseudoAlreadyUsed(pseudo)
+
+        val competitor = Competitor(pseudo)
 
         repository.add(competitor)
 
