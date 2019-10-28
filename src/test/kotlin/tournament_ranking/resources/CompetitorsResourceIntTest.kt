@@ -14,14 +14,29 @@ import javax.ws.rs.core.Response
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.junit.Before
+import org.junit.Rule
 import tournament_ranking.domain.Competitor
+import tournament_ranking.resources.dto.CompetitorWithRank
 import tournament_ranking.resources.dto.UpdateCompetitorPoints
 import tournament_ranking.resources.exception.CompetitorNotFound
+import javax.ws.rs.core.GenericType
 
 
 class CompetitorsResourceTest {
     private val apiErrorMessage = "{\"errors\":[\"pseudo est obligatoire\"]}"
     private val apiErrorStatus = 422
+
+    val repository = CompetitorRepository()
+
+    val kotlinJacksonMapper = ObjectMapper().registerModule(KotlinModule())
+
+    @Rule
+    @JvmField
+    val resources = ResourceTestRule.builder()
+        .addResource(CompetitorsResource(repository))
+        .addProvider(ApiErrorExceptionMapper())
+        .setMapper(kotlinJacksonMapper)
+        .build()
 
     @Test
     fun shouldAddACompetitorIfPseudoIsProvided() {
@@ -87,6 +102,24 @@ class CompetitorsResourceTest {
         assertThat(response.status).isEqualTo(Response.Status.NO_CONTENT.statusCode)
     }
 
+    @Test
+    fun shouldQueryTheCompetitorsSortedByScore() {
+        val first = Competitor("competitor1", -10)
+        val second = Competitor("competitor2", 10)
+        val third = Competitor("competitor3", 20)
+
+        listOf(first, second, third).forEach { repository.add(it) }
+
+        val response = resources.target("/tournament/competitors").request().get()
+
+        assertThat(response.status).isEqualTo(Response.Status.OK.statusCode)
+        assertThat(response.readEntity(object: GenericType<List<CompetitorWithRank>>() {})).containsExactly(
+            CompetitorWithRank(third.pseudo, third.points, 1),
+            CompetitorWithRank(second.pseudo, second.points, 2),
+            CompetitorWithRank(first.pseudo, first.points, 3)
+        )
+    }
+
     private fun doUpdateCompetitorPointsRequest(pseudo: String, points: Int): Response {
         val command = UpdateCompetitorPoints(points)
         return resources.target("/tournament/competitors/$pseudo").request().put(Entity.json(command))
@@ -95,19 +128,5 @@ class CompetitorsResourceTest {
     private fun doAddCompetitorRequest(pseudo: String?): Response {
         val command = AddCompetitor(pseudo)
         return resources.target("/tournament/competitors").request().post(Entity.json(command))
-    }
-
-    companion object {
-        val repository = CompetitorRepository()
-
-        val kotlinJacksonMapper = ObjectMapper().registerModule(KotlinModule())
-
-        @ClassRule
-        @JvmField
-        val resources = ResourceTestRule.builder()
-            .addResource(CompetitorsResource(repository))
-            .addProvider(ApiErrorExceptionMapper())
-            .setMapper(kotlinJacksonMapper)
-            .build()
     }
 }

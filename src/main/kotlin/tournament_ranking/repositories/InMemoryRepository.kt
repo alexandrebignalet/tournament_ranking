@@ -2,16 +2,15 @@ package tournament_ranking.repositories
 
 import tournament_ranking.domain.Entity
 
-open class InMemoryRepository<EType: Entity> {
+open class InMemoryRepository<TEntity: Entity> {
 
-    private val byId = HashMap<String, EType>()
+    protected val byId = HashMap<String, TEntity>()
 
-    fun get(entityId: String): EType? {
+    fun get(entityId: String): TEntity? {
         return byId[entityId]
     }
 
-    fun add(entity: EType) {
+    fun add(entity: TEntity) {
         byId[entity.id()] = entity
     }
-
 }
