@@ -125,6 +125,17 @@ class CompetitorsResourceTest {
 
     }
 
+    @Test
+    fun shouldDeleteAllTournamentCompetitors() {
+        val deleteResponse = resources.target("/tournament/competitors").request().delete()
+
+        assertThat(deleteResponse.status).isEqualTo(Response.Status.NO_CONTENT.statusCode)
+
+        val getAllResponse = resources.target("/tournament/competitors").request().get()
+
+        assertThat(getAllResponse.readEntity(object: GenericType<List<Competitor>>() {})).isEqualTo(emptyList<Competitor>())
+    }
+
     private fun initRepositoryWithSomeCompetitors(): Triple<Competitor, Competitor, Competitor> {
         val first = Competitor("competitor1", 30)
         val second = Competitor("competitor2", 20)

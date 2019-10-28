@@ -70,4 +70,11 @@ class CompetitorsResource(private val repository: CompetitorRepository) {
             .ok(query.run(competitorId))
             .build();
     }
+
+    @DELETE
+    fun resetTournamentCompetitors(): Response {
+        repository.reset()
+
+        return Response.noContent().build();
+    }
 }

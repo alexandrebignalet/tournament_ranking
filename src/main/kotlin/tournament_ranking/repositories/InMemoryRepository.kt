@@ -13,4 +13,8 @@ open class InMemoryRepository<TEntity: Entity> {
     open fun add(entity: TEntity) {
         byId[entity.id()] = entity
     }
+
+    fun reset() {
+        byId = HashMap()
+    }
 }
