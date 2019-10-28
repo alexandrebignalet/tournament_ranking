@@ -4,13 +4,13 @@ import tournament_ranking.domain.Entity
 
 open class InMemoryRepository<TEntity: Entity> {
 
-    protected val byId = HashMap<String, TEntity>()
+    protected var byId: MutableMap<String, TEntity> = HashMap()
 
-    fun get(entityId: String): TEntity? {
+    open fun get(entityId: String): TEntity? {
         return byId[entityId]
     }
 
-    fun add(entity: TEntity) {
+    open fun add(entity: TEntity) {
         byId[entity.id()] = entity
     }
 }

@@ -2,7 +2,6 @@ package tournament_ranking.resources
 
 import io.dropwizard.testing.junit.ResourceTestRule
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.ClassRule
 import org.junit.Test
 import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.dto.AddCompetitor
@@ -13,10 +12,8 @@ import javax.ws.rs.client.Entity
 import javax.ws.rs.core.Response
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import org.junit.Before
 import org.junit.Rule
 import tournament_ranking.domain.Competitor
-import tournament_ranking.resources.dto.CompetitorWithRank
 import tournament_ranking.resources.dto.UpdateCompetitorPoints
 import tournament_ranking.resources.exception.CompetitorNotFound
 import javax.ws.rs.core.GenericType
@@ -104,20 +101,37 @@ class CompetitorsResourceTest {
 
     @Test
     fun shouldQueryTheCompetitorsSortedByScore() {
-        val first = Competitor("competitor1", -10)
-        val second = Competitor("competitor2", 10)
-        val third = Competitor("competitor3", 20)
-
-        listOf(first, second, third).forEach { repository.add(it) }
+        val (first, second, third) = initRepositoryWithSomeCompetitors()
 
         val response = resources.target("/tournament/competitors").request().get()
 
         assertThat(response.status).isEqualTo(Response.Status.OK.statusCode)
-        assertThat(response.readEntity(object: GenericType<List<CompetitorWithRank>>() {})).containsExactly(
-            CompetitorWithRank(third.pseudo, third.points, 1),
-            CompetitorWithRank(second.pseudo, second.points, 2),
-            CompetitorWithRank(first.pseudo, first.points, 3)
+        assertThat(response.readEntity(object: GenericType<List<Competitor>>() {})).containsExactly(
+            Competitor(first.pseudo, first.points, 1),
+            Competitor(second.pseudo, second.points, 2),
+            Competitor(third.pseudo, third.points, 3)
         )
+    }
+
+    @Test
+    fun shouldQueryACompetitorWithItsRank() {
+        val (first) = initRepositoryWithSomeCompetitors()
+
+        val response = resources.target("/tournament/competitors/${first.pseudo}").request().get()
+
+        assertThat(response.status).isEqualTo(Response.Status.OK.statusCode)
+        assertThat(response.readEntity(Competitor::class.java)).isEqualTo(Competitor(first.pseudo, first.points, 1))
+
+    }
+
+    private fun initRepositoryWithSomeCompetitors(): Triple<Competitor, Competitor, Competitor> {
+        val first = Competitor("competitor1", 30)
+        val second = Competitor("competitor2", 20)
+        val third = Competitor("competitor3", -10)
+
+        listOf(first, second, third).forEach { repository.add(it) }
+
+        return Triple(first, second, third)
     }
 
     private fun doUpdateCompetitorPointsRequest(pseudo: String, points: Int): Response {

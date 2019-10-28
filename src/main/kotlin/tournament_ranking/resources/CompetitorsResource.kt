@@ -3,7 +3,6 @@ package tournament_ranking.resources
 import tournament_ranking.domain.Competitor
 import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.dto.AddCompetitor
-import tournament_ranking.resources.dto.CompetitorWithRank
 import tournament_ranking.resources.dto.UpdateCompetitorPoints
 import tournament_ranking.resources.exception.CompetitorNotFound
 import tournament_ranking.resources.exception.CompetitorPseudoAlreadyUsed
@@ -53,12 +52,21 @@ class CompetitorsResource(private val repository: CompetitorRepository) {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     fun rankList(): Response {
-        val rankList = repository
-            .rankList()
-            .mapIndexed { index, it -> CompetitorWithRank(it.pseudo, it.points, index + 1) }
+        val rankList = repository.rankList()
 
         return Response
             .ok(rankList)
+            .build();
+    }
+
+    @GET
+    @Path("/{competitorId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getCompetitorWithRank(@PathParam("competitorId") competitorId: String): Response {
+        val competitor = repository.get(competitorId)
+
+        return Response
+            .ok(competitor)
             .build();
     }
 }
