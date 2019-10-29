@@ -2,7 +2,6 @@ package tournament_ranking.infrastructure
 
 import com.amazonaws.services.dynamodbv2.model.*
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
-import tournament_ranking.config.DynamoDBConfig
 import com.amazonaws.services.dynamodbv2.model.KeyType
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement
 import java.util.ArrayList
@@ -12,7 +11,7 @@ import com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex
 
 
 class DynamoDBService(private val awsClient: AmazonDynamoDBClient,
-                      private val config: DynamoDBConfig) {
+                      private val competitorsTableName: String) {
 
     companion object {
         const val gsiIndexName = "leaderBoardIndex"
@@ -40,14 +39,14 @@ class DynamoDBService(private val awsClient: AmazonDynamoDBClient,
                     10, 10
                 )
             )
-            .withTableName(config.competitorsTableName)
+            .withTableName(competitorsTableName)
             .withGlobalSecondaryIndexes(createGSI())
 
         awsClient.createTable(request)
     }
 
     fun deleteTable() {
-        awsClient.deleteTable(config.competitorsTableName)
+        awsClient.deleteTable(competitorsTableName)
     }
 
     private fun createGSI(): GlobalSecondaryIndex {

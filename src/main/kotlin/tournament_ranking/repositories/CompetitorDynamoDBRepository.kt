@@ -5,14 +5,13 @@ import com.amazonaws.services.dynamodbv2.document.*
 import tournament_ranking.domain.CompetitorRepository
 import java.util.HashMap
 import com.amazonaws.services.dynamodbv2.model.*
-import tournament_ranking.config.DynamoDBConfig
 import tournament_ranking.domain.Competitor
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec
 import tournament_ranking.infrastructure.DynamoDBService
 import java.math.BigDecimal
 
 class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClient,
-                                   private val config: DynamoDBConfig): CompetitorRepository {
+                                   private val tableName: String): CompetitorRepository {
 
     private val dynamoDb = DynamoDB(dynamoClient)
 
@@ -30,7 +29,7 @@ class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClien
                 AttributeValue(competitorId)
             )
         val query = QueryRequest()
-            .withTableName(config.competitorsTableName)
+            .withTableName(tableName)
             .withKeyConditions(keyConditions)
             .withScanIndexForward(false)
 
@@ -52,7 +51,7 @@ class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClien
             itemValues[POINTS_KEY] = AttributeValue().withN(competitor.points.toString())
             itemValues[DynamoDBService.gsiPkName] = AttributeValue(GSI_VALUE)
 
-            dynamoClient.putItem(config.competitorsTableName, itemValues)
+            dynamoClient.putItem(tableName, itemValues)
         }
     }
 
@@ -66,7 +65,7 @@ class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClien
             AttributeValue().withN(competitor.points.toString()),
             AttributeAction.PUT)
 
-        dynamoClient.updateItem(config.competitorsTableName, identifier, updateValues)
+        dynamoClient.updateItem(tableName, identifier, updateValues)
     }
 
     override fun rankList(): List<Competitor> {
@@ -83,14 +82,14 @@ class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClien
         val hashKeysToDelete = leaderBoardIndex().map { it.get(PSEUDO_KEY) as String }.toTypedArray()
         if (hashKeysToDelete.isEmpty()) return;
 
-        val competitorTableWriteItems = TableWriteItems(config.competitorsTableName)
+        val competitorTableWriteItems = TableWriteItems(tableName)
             .withHashOnlyKeysToDelete(PSEUDO_KEY, *hashKeysToDelete)
 
         dynamoDb.batchWriteItem(competitorTableWriteItems)
     }
 
     private fun leaderBoardIndex(): ItemCollection<QueryOutcome> {
-        val table = dynamoDb.getTable(config.competitorsTableName)
+        val table = dynamoDb.getTable(tableName)
         val index = table.getIndex(DynamoDBService.gsiIndexName)
 
         val querySpec = QuerySpec()

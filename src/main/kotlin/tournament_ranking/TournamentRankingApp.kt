@@ -16,10 +16,8 @@ class TournamentRankingApp : Application<TournamentRankingConfig>() {
 
         val jersey = environment.jersey()
 
-        val mode: String = configuration.mode
-
         val tournamentRankingComponent: TournamentRankingComponent = DaggerTournamentRankingComponent.builder()
-            .tournamentRankingModule(TournamentRankingModule(mode, configuration.dynamoDbConfig()))
+            .tournamentRankingModule(TournamentRankingModule(configuration))
             .build()
 
         val resources = listOf(

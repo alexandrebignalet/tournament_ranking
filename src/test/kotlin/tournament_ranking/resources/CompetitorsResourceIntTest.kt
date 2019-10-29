@@ -11,26 +11,28 @@ import javax.ws.rs.core.Response
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import tournament_ranking.DaggerTournamentRankingComponent
 import tournament_ranking.TournamentRankingModule
-import tournament_ranking.config.DynamoDBConfig
+import tournament_ranking.config.TournamentRankingConfig
 import tournament_ranking.domain.Competitor
 import tournament_ranking.resources.dto.CompetitorWithRank
 import tournament_ranking.resources.dto.ChangeCompetitorPoints
 import tournament_ranking.resources.exception.CompetitorNotFound
 import javax.ws.rs.core.GenericType
-
+import java.io.File
+import io.dropwizard.configuration.YamlConfigurationFactory
+import io.dropwizard.jackson.Jackson
+import io.dropwizard.jersey.validation.Validators
 
 class CompetitorsResourceTest {
     private val apiErrorMessage = "{\"errors\":[\"pseudo est obligatoire\"]}"
     private val apiErrorStatus = 422
 
-    val configuration = DynamoDBConfig()
+    val configuration = loadTestConfig()
     val appComponent = DaggerTournamentRankingComponent.builder()
-        .tournamentRankingModule(TournamentRankingModule("dynamodb", configuration))
+        .tournamentRankingModule(TournamentRankingModule(configuration))
         .build()
     val repository = appComponent.competitorRepository()
 
@@ -181,5 +183,14 @@ class CompetitorsResourceTest {
     private fun doAddCompetitorRequest(pseudo: String?): Response {
         val command = AddCompetitor(pseudo)
         return resources.target("/tournament/competitors").request().post(Entity.json(command))
+    }
+
+    private fun loadTestConfig(): TournamentRankingConfig {
+        val objectMapper = Jackson.newObjectMapper()
+        val validator = Validators.newValidator()
+        val factory = YamlConfigurationFactory<TournamentRankingConfig>(TournamentRankingConfig::class.java, validator, objectMapper, "dw")
+
+        val yaml = File(Thread.currentThread().contextClassLoader.getResource("config-test.yaml")!!.path)
+        return factory.build(yaml)
     }
 }
