@@ -1,14 +1,6 @@
 package tournament_ranking.domain
 
-public class Competitor(pseudo: String?) : Entity {
-    private val pseudo: String
+data class Competitor(val pseudo: String, var points: Int = 0) : Entity {
 
-    init {
-        if (pseudo.isNullOrEmpty()) throw NameRequiredError()
-        this.pseudo = pseudo
-    }
-
-    override fun id(): String {
-        return pseudo
-    }
+    override fun id() = pseudo
 }
