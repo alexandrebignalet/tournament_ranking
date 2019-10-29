@@ -5,7 +5,6 @@ import io.dropwizard.setup.Environment
 import tournament_ranking.domain.Competitor
 import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.CompetitorsResource
-import tournament_ranking.resources.DefaultResource
 import tournament_ranking.resources.exception.ApiErrorExceptionMapper
 
 class TournamentRankingApp : Application<TournamentRankingConfig>() {
