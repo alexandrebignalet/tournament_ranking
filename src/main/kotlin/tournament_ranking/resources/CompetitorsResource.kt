@@ -5,6 +5,7 @@ import tournament_ranking.domain.CompetitorRepository
 import tournament_ranking.query.GetCompetitorWithRank
 import tournament_ranking.resources.dto.AddCompetitor
 import tournament_ranking.resources.dto.ChangeCompetitorPoints
+import tournament_ranking.resources.exception.ApiError
 import tournament_ranking.resources.exception.CompetitorNotFound
 import tournament_ranking.resources.exception.CompetitorPseudoAlreadyUsed
 import javax.inject.Inject
@@ -14,11 +15,11 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Path("/tournament/competitors")
+@Produces(MediaType.APPLICATION_JSON)
 class CompetitorsResource @Inject constructor(private val repository: CompetitorRepository) {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     fun addCompetitor(@Valid command: AddCompetitor): Response {
 
         val pseudo = command.pseudo!!
@@ -37,7 +38,6 @@ class CompetitorsResource @Inject constructor(private val repository: Competitor
     @PUT
     @Path("/{pseudo}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     fun updateCompetitorPoints(@PathParam("pseudo") pseudo: String, @Valid command: ChangeCompetitorPoints): Response {
 
         val competitor = repository.get(pseudo) ?: throw CompetitorNotFound(pseudo)
@@ -52,7 +52,6 @@ class CompetitorsResource @Inject constructor(private val repository: Competitor
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     fun rankList(): Response {
         val rankList = repository.rankList()
 
@@ -63,13 +62,12 @@ class CompetitorsResource @Inject constructor(private val repository: Competitor
 
     @GET
     @Path("/{competitorId}")
-    @Produces(MediaType.APPLICATION_JSON)
     fun getCompetitorWithRank(@PathParam("competitorId") competitorId: String): Response {
         val query = GetCompetitorWithRank(repository)
 
-        return Response
-            .ok(query.run(competitorId))
-            .build();
+        val competitor = query.run(competitorId) ?: throw CompetitorNotFound(competitorId)
+
+        return Response.ok(competitor).build()
     }
 
     @DELETE

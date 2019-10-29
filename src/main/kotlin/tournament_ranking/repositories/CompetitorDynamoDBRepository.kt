@@ -7,11 +7,12 @@ import java.util.HashMap
 import com.amazonaws.services.dynamodbv2.model.*
 import tournament_ranking.config.DynamoDBConfig
 import tournament_ranking.domain.Competitor
-import tournament_ranking.infrastructure.DynamoDBFactory
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec
+import tournament_ranking.infrastructure.DynamoDBService
 import java.math.BigDecimal
 
-class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClient): CompetitorRepository {
+class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClient,
+                                   private val config: DynamoDBConfig): CompetitorRepository {
 
     private val dynamoDb = DynamoDB(dynamoClient)
 
@@ -29,7 +30,7 @@ class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClien
                 AttributeValue(competitorId)
             )
         val query = QueryRequest()
-            .withTableName(DynamoDBConfig.competitorTableName)
+            .withTableName(config.competitorsTableName)
             .withKeyConditions(keyConditions)
             .withScanIndexForward(false)
 
@@ -43,16 +44,29 @@ class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClien
     }
 
     override fun save(competitor: Competitor) {
-        val itemValues = HashMap<String, AttributeValue>()
-        itemValues[PSEUDO_KEY] = AttributeValue(competitor.pseudo)
-        itemValues[POINTS_KEY] = AttributeValue().withN(competitor.points.toString())
-        itemValues[DynamoDBFactory.gsiPkName] = AttributeValue(GSI_VALUE)
-
         if (exists(competitor.pseudo)) {
-            dynamoClient.updateItem(DynamoDBConfig.competitorTableName, itemValues, HashMap())
+            update(competitor)
         } else {
-            dynamoClient.putItem(DynamoDBConfig.competitorTableName, itemValues)
+            val itemValues = HashMap<String, AttributeValue>()
+            itemValues[PSEUDO_KEY] = AttributeValue(competitor.pseudo)
+            itemValues[POINTS_KEY] = AttributeValue().withN(competitor.points.toString())
+            itemValues[DynamoDBService.gsiPkName] = AttributeValue(GSI_VALUE)
+
+            dynamoClient.putItem(config.competitorsTableName, itemValues)
         }
+    }
+
+    private fun update(competitor: Competitor) {
+        val identifier = HashMap<String, AttributeValue>()
+        identifier[PSEUDO_KEY] = AttributeValue(competitor.pseudo);
+
+        val updateValues = HashMap<String, AttributeValueUpdate>()
+
+        updateValues[POINTS_KEY] = AttributeValueUpdate(
+            AttributeValue().withN(competitor.points.toString()),
+            AttributeAction.PUT)
+
+        dynamoClient.updateItem(config.competitorsTableName, identifier, updateValues)
     }
 
     override fun rankList(): List<Competitor> {
@@ -67,21 +81,22 @@ class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClien
 
     override fun reset() {
         val hashKeysToDelete = leaderBoardIndex().map { it.get(PSEUDO_KEY) as String }.toTypedArray()
-        val competitorTableWriteItems = TableWriteItems(DynamoDBConfig.competitorTableName)
+        if (hashKeysToDelete.isEmpty()) return;
+
+        val competitorTableWriteItems = TableWriteItems(config.competitorsTableName)
             .withHashOnlyKeysToDelete(PSEUDO_KEY, *hashKeysToDelete)
 
         dynamoDb.batchWriteItem(competitorTableWriteItems)
     }
 
     private fun leaderBoardIndex(): ItemCollection<QueryOutcome> {
-        val table = dynamoDb.getTable(DynamoDBConfig.competitorTableName)
-        val index = table.getIndex(DynamoDBFactory.gsiIndexName)
+        val table = dynamoDb.getTable(config.competitorsTableName)
+        val index = table.getIndex(DynamoDBService.gsiIndexName)
 
         val querySpec = QuerySpec()
-            .withHashKey(DynamoDBFactory.gsiPkName, GSI_VALUE)
+            .withHashKey(DynamoDBService.gsiPkName, GSI_VALUE)
             .withScanIndexForward(false)
 
         return index.query(querySpec)
     }
-
 }

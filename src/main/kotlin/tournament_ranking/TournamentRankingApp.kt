@@ -6,9 +6,7 @@ import tournament_ranking.resources.exception.ApiErrorExceptionMapper
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor
 import io.dropwizard.configuration.SubstitutingSourceProvider
 import io.dropwizard.setup.Bootstrap
-import tournament_ranking.config.DynamoDBConfig
 import tournament_ranking.config.TournamentRankingConfig
-import tournament_ranking.infrastructure.DynamoDBFactory
 
 
 class TournamentRankingApp : Application<TournamentRankingConfig>() {

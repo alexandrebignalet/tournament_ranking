@@ -10,6 +10,8 @@ import javax.ws.rs.client.Entity
 import javax.ws.rs.core.Response
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import tournament_ranking.DaggerTournamentRankingComponent
@@ -26,8 +28,9 @@ class CompetitorsResourceTest {
     private val apiErrorMessage = "{\"errors\":[\"pseudo est obligatoire\"]}"
     private val apiErrorStatus = 422
 
+    val configuration = DynamoDBConfig()
     val appComponent = DaggerTournamentRankingComponent.builder()
-        .tournamentRankingModule(TournamentRankingModule("test", DynamoDBConfig()))
+        .tournamentRankingModule(TournamentRankingModule("dynamodb", configuration))
         .build()
     val repository = appComponent.competitorRepository()
 
@@ -40,6 +43,11 @@ class CompetitorsResourceTest {
         .addProvider(ApiErrorExceptionMapper())
         .setMapper(kotlinJacksonMapper)
         .build()
+
+    @Before
+    fun emptyDB() {
+        repository.reset()
+    }
 
     @Test
     fun shouldAddACompetitorIfPseudoIsProvided() {
