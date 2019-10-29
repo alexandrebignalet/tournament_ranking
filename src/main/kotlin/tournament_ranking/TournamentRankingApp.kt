@@ -6,6 +6,9 @@ import tournament_ranking.resources.exception.ApiErrorExceptionMapper
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor
 import io.dropwizard.configuration.SubstitutingSourceProvider
 import io.dropwizard.setup.Bootstrap
+import tournament_ranking.config.DynamoDBConfig
+import tournament_ranking.config.TournamentRankingConfig
+import tournament_ranking.infrastructure.DynamoDBFactory
 
 
 class TournamentRankingApp : Application<TournamentRankingConfig>() {
@@ -25,7 +28,7 @@ class TournamentRankingApp : Application<TournamentRankingConfig>() {
         val mode: String = configuration.mode
 
         val tournamentRankingComponent: TournamentRankingComponent = DaggerTournamentRankingComponent.builder()
-            .tournamentRankingModule(TournamentRankingModule(mode))
+            .tournamentRankingModule(TournamentRankingModule(mode, configuration.dynamoDbConfig()))
             .build()
 
         val resources = listOf(

@@ -4,11 +4,16 @@ interface CompetitorRepository {
 
     fun get(competitorId: String): Competitor?
 
-    fun add(competitor: Competitor)
+    fun save(competitor: Competitor)
 
-    fun getCompetitorRank(entityId: String): Pair<Int, Competitor?>
+    fun getCompetitorRank(entityId: String): Pair<Int, Competitor?> {
+        val rank = rankList().map(Competitor::pseudo).indexOf(entityId) + 1
+        return rank to get(entityId)
+    }
 
     fun rankList(): List<Competitor>
 
     fun reset()
+
+    fun exists(competitorId: String): Boolean
 }

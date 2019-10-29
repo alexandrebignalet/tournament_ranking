@@ -1,2 +1,9 @@
 name: Tournament Ranking
-mode: ${MODE}
+mode: dynamodb
+endpointURL: http://localhost:4569
+accessKey: toto
+accessSecret: tata
+server:
+  applicationConnectors:
+    - type: http
+      port: 3000

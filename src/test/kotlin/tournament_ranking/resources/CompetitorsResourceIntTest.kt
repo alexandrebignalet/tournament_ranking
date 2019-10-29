@@ -14,6 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import tournament_ranking.DaggerTournamentRankingComponent
 import tournament_ranking.TournamentRankingModule
+import tournament_ranking.config.DynamoDBConfig
 import tournament_ranking.domain.Competitor
 import tournament_ranking.resources.dto.CompetitorWithRank
 import tournament_ranking.resources.dto.ChangeCompetitorPoints
@@ -26,7 +27,7 @@ class CompetitorsResourceTest {
     private val apiErrorStatus = 422
 
     val appComponent = DaggerTournamentRankingComponent.builder()
-        .tournamentRankingModule(TournamentRankingModule("test"))
+        .tournamentRankingModule(TournamentRankingModule("test", DynamoDBConfig()))
         .build()
     val repository = appComponent.competitorRepository()
 
@@ -94,7 +95,7 @@ class CompetitorsResourceTest {
     @Test
     fun shouldIncreaseCompetitorPoints() {
         val competitor = Competitor("pseudo")
-        repository.add(competitor)
+        repository.save(competitor)
 
         val points = 100
         val response = doUpdateCompetitorPointsRequest(competitor.id(), points)
@@ -108,7 +109,7 @@ class CompetitorsResourceTest {
     fun shouldDecreaseCompetitorPoints() {
         val initialPoints = 1000
         val competitor = Competitor("pseudo", initialPoints)
-        repository.add(competitor)
+        repository.save(competitor)
 
         val points = -100
         val response = doUpdateCompetitorPointsRequest(competitor.id(), points)
@@ -159,7 +160,7 @@ class CompetitorsResourceTest {
         val second = Competitor("competitor2", 20)
         val third = Competitor("competitor3", -10)
 
-        listOf(first, second, third).forEach { repository.add(it) }
+        listOf(first, second, third).forEach { repository.save(it) }
 
         return Triple(first, second, third)
     }

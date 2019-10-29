@@ -23,11 +23,11 @@ class CompetitorsResource @Inject constructor(private val repository: Competitor
 
         val pseudo = command.pseudo!!
 
-        if (repository.get(pseudo) != null) throw CompetitorPseudoAlreadyUsed(pseudo)
+        if (repository.exists(pseudo)) throw CompetitorPseudoAlreadyUsed(pseudo)
 
         val competitor = Competitor(pseudo)
 
-        repository.add(competitor)
+        repository.save(competitor)
 
         return Response
             .status(Response.Status.CREATED)
@@ -44,7 +44,7 @@ class CompetitorsResource @Inject constructor(private val repository: Competitor
 
         competitor.points += command.points
 
-        repository.add(competitor)
+        repository.save(competitor)
 
         return Response
             .status(Response.Status.NO_CONTENT)

@@ -7,11 +7,15 @@ class CompetitorInMemoryRepository: CompetitorRepository {
 
     private val inMemoryRepository = InMemoryRepository<Competitor>()
 
+    override fun exists(competitorId: String): Boolean {
+        return get(competitorId) != null;
+    }
+
     override fun get(competitorId: String): Competitor? {
         return inMemoryRepository.get(competitorId)
     }
 
-    override fun add(competitor: Competitor) {
+    override fun save(competitor: Competitor) {
         return inMemoryRepository.add(competitor)
     }
 
