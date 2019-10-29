@@ -15,7 +15,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.junit.Rule
 import tournament_ranking.domain.Competitor
 import tournament_ranking.resources.dto.CompetitorWithRank
-import tournament_ranking.resources.dto.UpdateCompetitorPoints
+import tournament_ranking.resources.dto.ChangeCompetitorPoints
 import tournament_ranking.resources.exception.CompetitorNotFound
 import javax.ws.rs.core.GenericType
 
@@ -88,7 +88,7 @@ class CompetitorsResourceTest {
     }
 
     @Test
-    fun shouldUpdateCompetitorPoints() {
+    fun shouldIncreaseCompetitorPoints() {
         val competitor = Competitor("pseudo")
         repository.add(competitor)
 
@@ -97,6 +97,20 @@ class CompetitorsResourceTest {
 
         val updatedCompetitor = repository.get(competitor.id())
         assertThat(updatedCompetitor?.points).isEqualTo(points)
+        assertThat(response.status).isEqualTo(Response.Status.NO_CONTENT.statusCode)
+    }
+
+    @Test
+    fun shouldDecreaseCompetitorPoints() {
+        val initialPoints = 1000
+        val competitor = Competitor("pseudo", initialPoints)
+        repository.add(competitor)
+
+        val points = -100
+        val response = doUpdateCompetitorPointsRequest(competitor.id(), points)
+
+        val updatedCompetitor = repository.get(competitor.id())
+        assertThat(updatedCompetitor?.points).isEqualTo(initialPoints + points)
         assertThat(response.status).isEqualTo(Response.Status.NO_CONTENT.statusCode)
     }
 
@@ -147,7 +161,7 @@ class CompetitorsResourceTest {
     }
 
     private fun doUpdateCompetitorPointsRequest(pseudo: String, points: Int): Response {
-        val command = UpdateCompetitorPoints(points)
+        val command = ChangeCompetitorPoints(points)
         return resources.target("/tournament/competitors/$pseudo").request().put(Entity.json(command))
     }
 

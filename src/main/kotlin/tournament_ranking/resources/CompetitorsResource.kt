@@ -4,7 +4,7 @@ import tournament_ranking.domain.Competitor
 import tournament_ranking.query.GetCompetitorWithRank
 import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.dto.AddCompetitor
-import tournament_ranking.resources.dto.UpdateCompetitorPoints
+import tournament_ranking.resources.dto.ChangeCompetitorPoints
 import tournament_ranking.resources.exception.CompetitorNotFound
 import tournament_ranking.resources.exception.CompetitorPseudoAlreadyUsed
 import javax.validation.Valid
@@ -37,11 +37,11 @@ class CompetitorsResource(private val repository: CompetitorRepository) {
     @Path("/{pseudo}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun updateCompetitorPoints(@PathParam("pseudo") pseudo: String, @Valid command: UpdateCompetitorPoints): Response {
+    fun updateCompetitorPoints(@PathParam("pseudo") pseudo: String, @Valid command: ChangeCompetitorPoints): Response {
 
         val competitor = repository.get(pseudo) ?: throw CompetitorNotFound(pseudo)
 
-        competitor.points = command.points
+        competitor.points += command.points
 
         repository.add(competitor)
 

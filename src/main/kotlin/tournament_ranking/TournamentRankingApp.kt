@@ -21,7 +21,6 @@ class TournamentRankingApp : Application<TournamentRankingConfig>() {
         competitorRepository.add(Competitor("hugues", 30))
 
         val resources = listOf(
-            DefaultResource(),
             CompetitorsResource(competitorRepository),
 
             ApiErrorExceptionMapper()
