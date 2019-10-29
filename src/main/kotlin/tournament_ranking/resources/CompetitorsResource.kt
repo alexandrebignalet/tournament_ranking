@@ -1,6 +1,7 @@
 package tournament_ranking.resources
 
 import tournament_ranking.domain.Competitor
+import tournament_ranking.query.GetCompetitorWithRank
 import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.dto.AddCompetitor
 import tournament_ranking.resources.dto.UpdateCompetitorPoints
@@ -63,10 +64,10 @@ class CompetitorsResource(private val repository: CompetitorRepository) {
     @Path("/{competitorId}")
     @Produces(MediaType.APPLICATION_JSON)
     fun getCompetitorWithRank(@PathParam("competitorId") competitorId: String): Response {
-        val competitor = repository.get(competitorId)
+        val query = GetCompetitorWithRank(repository)
 
         return Response
-            .ok(competitor)
+            .ok(query.run(competitorId))
             .build();
     }
 }

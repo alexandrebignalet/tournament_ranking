@@ -4,20 +4,14 @@ import tournament_ranking.domain.Competitor
 
 class CompetitorRepository: InMemoryRepository<Competitor>() {
 
-    override fun add(entity: Competitor) {
-        super.add(entity)
-
-        updateRanking()
+    fun getCompetitorRank(entityId: String): Pair<Int, Competitor?> {
+        val rank = rankList().map(Competitor::pseudo).indexOf(entityId) + 1
+        return rank to get(entityId)
     }
 
     fun rankList(): List<Competitor> {
-        return byId.values.sortedByDescending { it.points  }
-    }
-
-    private fun updateRanking() {
-        byId = rankList()
-            .mapIndexed { idx, it -> Competitor(it.pseudo, it.points, idx + 1) }
-            .associateBy( { it.pseudo }, { it })
-            .toMutableMap()
+        return byId
+            .values
+            .sortedByDescending { it.points  }
     }
 }

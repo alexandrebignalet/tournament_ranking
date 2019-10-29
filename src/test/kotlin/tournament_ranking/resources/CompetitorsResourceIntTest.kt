@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.junit.Rule
 import tournament_ranking.domain.Competitor
+import tournament_ranking.resources.dto.CompetitorWithRank
 import tournament_ranking.resources.dto.UpdateCompetitorPoints
 import tournament_ranking.resources.exception.CompetitorNotFound
 import javax.ws.rs.core.GenericType
@@ -107,9 +108,9 @@ class CompetitorsResourceTest {
 
         assertThat(response.status).isEqualTo(Response.Status.OK.statusCode)
         assertThat(response.readEntity(object: GenericType<List<Competitor>>() {})).containsExactly(
-            Competitor(first.pseudo, first.points, 1),
-            Competitor(second.pseudo, second.points, 2),
-            Competitor(third.pseudo, third.points, 3)
+            Competitor(first.pseudo, first.points),
+            Competitor(second.pseudo, second.points),
+            Competitor(third.pseudo, third.points)
         )
     }
 
@@ -120,7 +121,7 @@ class CompetitorsResourceTest {
         val response = resources.target("/tournament/competitors/${first.pseudo}").request().get()
 
         assertThat(response.status).isEqualTo(Response.Status.OK.statusCode)
-        assertThat(response.readEntity(Competitor::class.java)).isEqualTo(Competitor(first.pseudo, first.points, 1))
+        assertThat(response.readEntity(CompetitorWithRank::class.java)).isEqualTo(CompetitorWithRank(first.pseudo, first.points, 1))
 
     }
 
