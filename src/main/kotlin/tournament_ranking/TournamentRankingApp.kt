@@ -11,13 +11,6 @@ import tournament_ranking.config.TournamentRankingConfig
 
 class TournamentRankingApp : Application<TournamentRankingConfig>() {
 
-    override fun initialize(bootstrap: Bootstrap<TournamentRankingConfig>) {
-        bootstrap.configurationSourceProvider = SubstitutingSourceProvider(
-            bootstrap.configurationSourceProvider,
-            EnvironmentVariableSubstitutor(false)
-        )
-    }
-
     override fun run(configuration: TournamentRankingConfig, environment: Environment) {
         println("Running ${configuration.name}")
 
