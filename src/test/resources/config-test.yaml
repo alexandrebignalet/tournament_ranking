@@ -1,6 +1,6 @@
 name: Tournament Ranking Test
 
-mode: dynamodb
+mode: ${APP_PERSISTENCE}
 
 endpointURL: http://localhost:4569
 accessKey: accessKey

@@ -25,6 +25,11 @@ import java.io.File
 import io.dropwizard.configuration.YamlConfigurationFactory
 import io.dropwizard.jackson.Jackson
 import io.dropwizard.jersey.validation.Validators
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor
+import io.dropwizard.configuration.ResourceConfigurationSourceProvider
+import io.dropwizard.configuration.SubstitutingSourceProvider
+
+
 
 class CompetitorsResourceTest {
     private val apiErrorMessage = "{\"errors\":[\"pseudo est obligatoire\"]}"
@@ -190,7 +195,10 @@ class CompetitorsResourceTest {
         val validator = Validators.newValidator()
         val factory = YamlConfigurationFactory<TournamentRankingConfig>(TournamentRankingConfig::class.java, validator, objectMapper, "dw")
 
-        val yaml = File(Thread.currentThread().contextClassLoader.getResource("config-test.yaml")!!.path)
-        return factory.build(yaml)
+        return factory.build(
+            SubstitutingSourceProvider(
+                ResourceConfigurationSourceProvider(),
+                EnvironmentVariableSubstitutor(false)
+            ), "config-test.yaml")
     }
 }
