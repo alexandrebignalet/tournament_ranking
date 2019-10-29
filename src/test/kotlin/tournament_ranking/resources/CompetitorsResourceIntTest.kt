@@ -2,8 +2,6 @@ package tournament_ranking.resources
 
 import io.dropwizard.testing.junit.ResourceTestRule
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import tournament_ranking.repositories.CompetitorRepository
 import tournament_ranking.resources.dto.AddCompetitor
 import tournament_ranking.resources.exception.ApiError
 import tournament_ranking.resources.exception.ApiErrorExceptionMapper
@@ -13,6 +11,9 @@ import javax.ws.rs.core.Response
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.junit.Rule
+import org.junit.Test
+import tournament_ranking.DaggerTournamentRankingComponent
+import tournament_ranking.TournamentRankingModule
 import tournament_ranking.domain.Competitor
 import tournament_ranking.resources.dto.CompetitorWithRank
 import tournament_ranking.resources.dto.ChangeCompetitorPoints
@@ -24,7 +25,10 @@ class CompetitorsResourceTest {
     private val apiErrorMessage = "{\"errors\":[\"pseudo est obligatoire\"]}"
     private val apiErrorStatus = 422
 
-    val repository = CompetitorRepository()
+    val appComponent = DaggerTournamentRankingComponent.builder()
+        .tournamentRankingModule(TournamentRankingModule("test"))
+        .build()
+    val repository = appComponent.competitorRepository()
 
     val kotlinJacksonMapper = ObjectMapper().registerModule(KotlinModule())
 
@@ -44,7 +48,7 @@ class CompetitorsResourceTest {
         assertThat(response.status).isEqualTo(201)
 
         val createdCompetitor = repository.get(pseudo)
-        assertThat(createdCompetitor).isNotNull
+        assertThat(createdCompetitor).isNotNull()
     }
 
     @Test
