@@ -15,5 +15,7 @@ interface CompetitorRepository {
 
     fun reset()
 
-    fun exists(competitorId: String): Boolean
+    fun exists(competitorId: String): Boolean {
+        return get(competitorId) != null;
+    }
 }

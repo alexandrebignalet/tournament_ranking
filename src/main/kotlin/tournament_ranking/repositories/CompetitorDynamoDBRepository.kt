@@ -21,25 +21,28 @@ class CompetitorDynamoDBRepository(private val dynamoClient: AmazonDynamoDBClien
         const val GSI_VALUE = "competitor"
     }
 
-    override fun exists(competitorId: String): Boolean {
+    override fun get(competitorId: String): Competitor? {
         val keyConditions = HashMap<String, Condition>()
         keyConditions[PSEUDO_KEY] = Condition()
             .withComparisonOperator(ComparisonOperator.EQ)
             .withAttributeValueList(
                 AttributeValue(competitorId)
             )
+
         val query = QueryRequest()
             .withTableName(tableName)
             .withKeyConditions(keyConditions)
-            .withScanIndexForward(false)
 
         val result = dynamoClient.query(query)
 
-        return result.items.count() > 0
-    }
+        if (result.items.count() == 0) return null
 
-    override fun get(competitorId: String): Competitor? {
-        return rankList().find { it.pseudo == competitorId }
+        val item = result.items.first()
+
+        return Competitor(
+                item.getValue(PSEUDO_KEY).s,
+                item.getValue(POINTS_KEY).n.toInt()
+            )
     }
 
     override fun save(competitor: Competitor) {
