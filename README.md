@@ -1,5 +1,40 @@
 # tournament_ranking
 
+## mise en route
+
+```
+git clone git@github.com:alexandrebignalet/tournament_ranking.git
+```
+
+```
+cd tournament_ranking
+./launch.sh
+```
+
+Le front est disponible sur [localhost:8082](http://localhost:8082)
+
+Le serveur expose une ressource REST sur [localhost:3000/tournament/competitors](localhost:3000/tournament/competitors) consommant et produisant du `application/json`
+```js 
+POST / avec { "pseudo": "a_pseudo" }
+``` 
+
+```js 
+PUT /{pseudo} avec { "points": Number }
+``` 
+
+```js 
+GET /
+``` 
+
+```js 
+GET /{pseudo}
+``` 
+
+```js 
+DELETE /
+``` 
+
+## sujet
 Réalisation d'une application exposant une API REST pour gérer le classement de joueurs lors d'un tournoi.
 
 Les joueurs sont triés en fonction du nombre de points de chacun, du joueur ayant le plus de points à celui qui en a le moins.
