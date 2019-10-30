@@ -6,7 +6,11 @@ import tournament_ranking.resources.exception.ApiErrorExceptionMapper
 import tournament_ranking.config.TournamentRankingConfig
 import io.dropwizard.lifecycle.ServerLifecycleListener
 import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.servlets.CrossOriginFilter
 import org.slf4j.LoggerFactory
+import java.util.*
+import javax.servlet.DispatcherType
+import javax.servlet.FilterRegistration
 
 
 class TournamentRankingApp : Application<TournamentRankingConfig>() {
@@ -16,6 +20,8 @@ class TournamentRankingApp : Application<TournamentRankingConfig>() {
         println("Running ${configuration.name}")
 
         val jersey = environment.jersey()
+
+        configureCors(environment)
 
         val tournamentRankingComponent: TournamentRankingComponent = DaggerTournamentRankingComponent.builder()
             .tournamentRankingModule(TournamentRankingModule(configuration))
@@ -35,6 +41,16 @@ class TournamentRankingApp : Application<TournamentRankingConfig>() {
             }
         })
 
+    }
+
+    private fun configureCors(environment: Environment) {
+        val cors = environment.servlets().addFilter("CORS", CrossOriginFilter::class.java)
+
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "Content-Type");
+        cors.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+
+        cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType::class.java), true, "/*")
     }
 
 }
