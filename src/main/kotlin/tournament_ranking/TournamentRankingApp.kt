@@ -3,9 +3,6 @@ package tournament_ranking
 import io.dropwizard.Application
 import io.dropwizard.setup.Environment
 import tournament_ranking.resources.exception.ApiErrorExceptionMapper
-import io.dropwizard.configuration.EnvironmentVariableSubstitutor
-import io.dropwizard.configuration.SubstitutingSourceProvider
-import io.dropwizard.setup.Bootstrap
 import tournament_ranking.config.TournamentRankingConfig
 import io.dropwizard.lifecycle.ServerLifecycleListener
 import org.eclipse.jetty.server.Server
