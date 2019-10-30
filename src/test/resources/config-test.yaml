@@ -1,0 +1,8 @@
+name: Tournament Ranking Test
+
+mode: ${APP_PERSISTENCE}
+
+endpointURL: http://localhost:4569
+accessKey: accessKey
+accessSecret: accessSecret
+competitorsTableName: competitors-test

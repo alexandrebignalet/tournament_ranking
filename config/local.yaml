@@ -1,1 +1,12 @@
 name: Tournament Ranking
+
+mode: dynamodb
+
+endpointURL: http://localhost:4569
+accessKey: accessKey
+accessSecret: accessSecret
+competitorsTableName: competitors
+server:
+  applicationConnectors:
+    - type: http
+      port: 3000

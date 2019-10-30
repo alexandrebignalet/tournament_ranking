@@ -1,0 +1,27 @@
+version: '2.1'
+
+services:
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4567-4597:4567-4597"
+      - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
+    environment:
+      - SERVICES=dynamodb
+      - DEBUG=0
+      - DATA_DIR=/tmp/localstack/data
+      - PORT_WEB_UI=8081
+      - LAMBDA_EXECUTOR=local
+      - KINESIS_ERROR_PROBABILITY=0
+      - TMPDIR=/private$TMPDIR
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/tmp/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8082:80'
