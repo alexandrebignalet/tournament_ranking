@@ -13,7 +13,7 @@ cd tournament_ranking
 
 Le front est disponible sur [localhost:8082](http://localhost:8082)
 
-Le serveur expose une ressource REST sur [localhost:3000/tournament/competitors](localhost:3000/tournament/competitors) consommant et produisant du `application/json`
+Le serveur expose une ressource REST sur [localhost:3000/tournament/competitors](http://localhost:3000/tournament/competitors) consommant et produisant du `application/json`
 ```js 
 POST / avec { "pseudo": "a_pseudo" }
 ``` 
