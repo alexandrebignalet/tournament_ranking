@@ -1,6 +1,5 @@
 package tournament_ranking.repositories
 
-import tournament_ranking.domain.Competitor
 import tournament_ranking.domain.Entity
 
 open class InMemoryRepository<TEntity: Entity> {

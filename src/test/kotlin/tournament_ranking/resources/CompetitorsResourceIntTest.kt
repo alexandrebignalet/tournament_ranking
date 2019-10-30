@@ -21,7 +21,6 @@ import tournament_ranking.resources.dto.CompetitorWithRank
 import tournament_ranking.resources.dto.ChangeCompetitorPoints
 import tournament_ranking.resources.exception.CompetitorNotFound
 import javax.ws.rs.core.GenericType
-import java.io.File
 import io.dropwizard.configuration.YamlConfigurationFactory
 import io.dropwizard.jackson.Jackson
 import io.dropwizard.jersey.validation.Validators

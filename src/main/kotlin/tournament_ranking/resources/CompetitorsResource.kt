@@ -5,7 +5,6 @@ import tournament_ranking.domain.CompetitorRepository
 import tournament_ranking.query.GetCompetitorWithRank
 import tournament_ranking.resources.dto.AddCompetitor
 import tournament_ranking.resources.dto.ChangeCompetitorPoints
-import tournament_ranking.resources.exception.ApiError
 import tournament_ranking.resources.exception.CompetitorNotFound
 import tournament_ranking.resources.exception.CompetitorPseudoAlreadyUsed
 import javax.inject.Inject

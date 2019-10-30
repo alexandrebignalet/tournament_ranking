@@ -4,13 +4,10 @@ import io.dropwizard.Application
 import io.dropwizard.setup.Environment
 import tournament_ranking.resources.exception.ApiErrorExceptionMapper
 import tournament_ranking.config.TournamentRankingConfig
-import io.dropwizard.lifecycle.ServerLifecycleListener
-import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlets.CrossOriginFilter
 import org.slf4j.LoggerFactory
 import java.util.*
 import javax.servlet.DispatcherType
-import javax.servlet.FilterRegistration
 
 
 class TournamentRankingApp : Application<TournamentRankingConfig>() {
@@ -33,14 +30,6 @@ class TournamentRankingApp : Application<TournamentRankingConfig>() {
         )
 
         resources.forEach { jersey.register(it) }
-
-        environment.lifecycle().addServerLifecycleListener(object : ServerLifecycleListener {
-            override fun serverStarted(server: Server?) {
-                assert(server != null)
-                logger.info("Tournament Ranking started at {}", server!!.getURI())
-            }
-        })
-
     }
 
     private fun configureCors(environment: Environment) {
