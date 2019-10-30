@@ -160,6 +160,8 @@ class CompetitorsResourceTest {
 
     @Test
     fun shouldDeleteAllTournamentCompetitors() {
+        initRepositoryWithSomeCompetitors()
+
         val deleteResponse = resources.target("/tournament/competitors").request().delete()
 
         assertThat(deleteResponse.status).isEqualTo(Response.Status.NO_CONTENT.statusCode)
