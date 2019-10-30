@@ -2,6 +2,9 @@
 
 ## mise en route
 
+Docker et docker-compose doivent être installés sur la machine.
+Java doit être présent sur la machine en version 8.
+
 ```
 git clone git@github.com:alexandrebignalet/tournament_ranking.git
 ```
