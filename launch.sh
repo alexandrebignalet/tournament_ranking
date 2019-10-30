@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./gradlew clean test
+APP_PERSISTENCE=dynamodb && ./gradlew clean test
 
 docker-compose build webapp
 
